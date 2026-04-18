@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Search, FileText, Users, Settings } from "lucide-react";
+import { Home, Search, FileText, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BlockOffLogo } from "./BlockOffLogo";
 
@@ -7,7 +7,6 @@ const TABS = [
   { to: "/", icon: Home, label: "Home", end: true },
   { to: "/scan", icon: Search, label: "Scan" },
   { to: "/reports", icon: FileText, label: "Reports" },
-  { to: "/community", icon: Users, label: "Community" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 

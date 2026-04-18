@@ -33,11 +33,11 @@ const Home = () => {
       </Card>
 
       <Button
-        onClick={() => navigate("/scan")}
+        onClick={() => navigate("/reports")}
         className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 text-base font-semibold justify-between px-5"
       >
         <span className="flex items-center gap-3">
-          <ShieldCheck className="h-5 w-5" /> Check a message
+          <ShieldCheck className="h-5 w-5" /> Report a message
         </span>
         <ArrowRight className="h-5 w-5" />
       </Button>
@@ -47,9 +47,6 @@ const Home = () => {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <Flame className="h-4 w-4 text-accent" /> Trending scams
           </h2>
-          <button onClick={() => navigate("/community")} className="text-xs font-medium text-accent">
-            See all
-          </button>
         </header>
         <div className="space-y-2">
           {alerts.map((a) => {

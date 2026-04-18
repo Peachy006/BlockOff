@@ -10,22 +10,22 @@ import Onboarding from "./pages/Onboarding";
 import Scan from "./pages/Scan";
 import Report from "./pages/Report";
 import Reports from "./pages/Reports";
-import Community from "./pages/Community";
 import SettingsPage from "./pages/SettingsPage";
+import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
 const ShellRoutes = () => {
   const { pathname } = useLocation();
-  const bare = pathname === "/onboarding";
+  const bare = pathname === "/onboarding" || pathname === "/auth";
   const routes = (
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/auth" element={<Auth />} />
       <Route path="/scan" element={<Scan />} />
       <Route path="/report" element={<Report />} />
       <Route path="/reports" element={<Reports />} />
-      <Route path="/community" element={<Community />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
