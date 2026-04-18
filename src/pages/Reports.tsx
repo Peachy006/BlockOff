@@ -83,14 +83,6 @@ const Reports = () => {
                   </div>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => share(r.identifier)}
-                className="w-full rounded-xl"
-              >
-                <Share2 className="h-4 w-4" /> Share warning
-              </Button>
             </Card>
           );
         })}

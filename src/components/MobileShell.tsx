@@ -13,6 +13,7 @@ const TABS = [
 export const MobileShell = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const showHeader = pathname !== "/onboarding";
+  const reportCount = 0; // TODO: Get from backend database
 
   return (
     <div className="min-h-screen bg-background flex justify-center">
@@ -20,6 +21,9 @@ export const MobileShell = ({ children }: { children: React.ReactNode }) => {
         {showHeader && (
           <header className="px-5 pt-5 pb-3 flex items-center justify-between sticky top-0 bg-background/85 backdrop-blur z-30">
             <BlockOffLogo size="md" />
+            <div className="bg-foreground text-background rounded-full px-3 py-1.5 text-xs font-semibold">
+              Total reports: {reportCount}
+            </div>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground rounded-full bg-muted px-2 py-1">
               Beta
             </span>
