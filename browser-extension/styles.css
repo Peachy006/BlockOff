@@ -1,0 +1,65 @@
+
+body {
+  width: 260px;
+  padding: 12px;
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff;
+  color: #000;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+}
+
+.title h1 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.title p {
+  font-size: 12px;
+  margin: 0;
+  color: #555;
+}
+
+.section {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+button {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.primary {
+  background: #eb5e28;
+  color: white;
+  border: none;
+}
+
+button.danger {
+  background: #fff3f3;
+  border: 1px solid #eb5e28;
+  color: #eb5e28;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
