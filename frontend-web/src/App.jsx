@@ -4,18 +4,21 @@ import phishingVid from './assets/Phising.mp4'
 import './index.css'
 
 function App() {
-    const [count, setCount] = useState(0)
     const [view, setView] = useState('home')
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [reportingType, setReportingType] = useState(null); // 'website', 'phone', or 'email'
 
-    // Combined user state to persist info from forms
+    // Central User State
     const [userData, setUserData] = useState({
         email: 'Guest',
         phone: '',
-        countryCode: '+45'
+        countryCode: '+45',
+        globalBlocked: 0,
+        points: 1250,
+        reported: 14,
+        warned: 432
     });
 
-    // Signup Form State
     const [signupData, setSignupData] = useState({
         email: '', countryCode: '+45', phone: '', pass1: '', pass2: ''
     });
@@ -26,11 +29,12 @@ function App() {
 
     const handleSignupSubmit = (e) => {
         e.preventDefault();
-        setUserData({
+        setUserData(prev => ({
+            ...prev,
             email: signupData.email,
             phone: signupData.phone,
             countryCode: signupData.countryCode
-        });
+        }));
         setIsLoggedIn(true);
         setView('profile');
     };
@@ -46,6 +50,17 @@ function App() {
     const handleLogout = () => {
         setIsLoggedIn(false);
         setView('home');
+    };
+
+    const submitReport = (e) => {
+        e.preventDefault();
+        setUserData(prev => ({
+            ...prev,
+            points: prev.points + 50,
+            reported: prev.reported + 1
+        }));
+        setReportingType(null);
+        alert("Report received! +50 Hunter Points awarded.");
     };
 
     // ── SHARED COMPONENTS ──────────────────────────────
@@ -64,9 +79,9 @@ function App() {
                         <a href="#" className="nav-link" onClick={() => setView('login')}>Log in</a>
                     )}
                 </nav>
-                <button className="counter" onClick={() => setCount((c) => c + 1)}>
-                    {count} Scammers Blocked
-                </button>
+                <div className="counter-badge">
+                    {userData.globalBlocked.toLocaleString()} Scammers Blocked
+                </div>
             </div>
         </header>
     );
@@ -75,7 +90,6 @@ function App() {
         <footer className="site-footer">
             <div className="footer-col">
                 <h3>Documentation</h3>
-                <p>Learn how Block OFF keeps you safe.</p>
                 <ul>
                     <li><a href="#">Security Guide</a></li>
                     <li><a href="#">API Docs</a></li>
@@ -84,13 +98,8 @@ function App() {
             <div className="footer-divider" />
             <div className="footer-col">
                 <h3>Connect</h3>
-                <p>Join our community for updates.</p>
-                <ul>
-                    <li><a href="#">GitHub</a></li>
-                    <li><a href="#">X / Twitter</a></li>
-                </ul>
                 <div className="contact-area">
-                    <span className="contact-label">Contact the team: </span>
+                    <span className="contact-label">Contact: </span>
                     <a href="mailto:Blockoffservice@gmail.com" className="email-display">Blockoffservice@gmail.com</a>
                 </div>
             </div>
@@ -110,30 +119,55 @@ function App() {
                     </section>
 
                     <div className="profile-grid">
-                        {/* Box 1: Points System */}
                         <div className="card card-dark stat-card highlight-card">
                             <h3>Total Score</h3>
-                            <div className="stat-number">1,250</div>
+                            <div className="stat-number">{userData.points.toLocaleString()}</div>
                             <p className="stat-label">Your points</p>
                         </div>
 
-                        {/* Box 2: Impact Metrics */}
                         <div className="card card-dark stat-card">
                             <div className="mini-stats">
                                 <div className="mini-stat-item">
-                                    <span className="mini-stat-value">14</span>
-                                    <span className="mini-stat-desc">Scammers Reported</span>
+                                    <span className="mini-stat-value">{userData.reported}</span>
+                                    <span className="mini-stat-desc">Reports</span>
                                 </div>
                                 <div className="mini-stat-divider"></div>
                                 <div className="mini-stat-item">
-                                    <span className="mini-stat-value">432</span>
-                                    <span className="mini-stat-desc">Users Warned</span>
+                                    <span className="mini-stat-value">{userData.warned}</span>
+                                    <span className="mini-stat-desc">Warned</span>
                                 </div>
                             </div>
-                            <p className="impact-text">Your reports help keep the community safe.</p>
+                            <p className="impact-text">Your reports keep the community safe.</p>
                         </div>
 
-                        {/* Box 3: Account Details */}
+                        <div className="card card-dark stat-card report-action-card">
+                            {!reportingType ? (
+                                <>
+                                    <h3 className="report-title">Found a threat?</h3>
+                                    <p className="report-desc">Choose an option to report a scammer.</p>
+                                    <div className="report-options">
+                                        <button className="btn btn-outline btn-small" onClick={() => setReportingType('website')}>Website</button>
+                                        <button className="btn btn-outline btn-small" onClick={() => setReportingType('phone')}>Phone</button>
+                                        <button className="btn btn-outline btn-small" onClick={() => setReportingType('email')}>Email</button>
+                                    </div>
+                                </>
+                            ) : (
+                                <form onSubmit={submitReport} className="mini-report-form">
+                                    <h3 className="form-heading">Report {reportingType}</h3>
+                                    <input
+                                        type="text"
+                                        placeholder={`Enter scam ${reportingType} here...`}
+                                        className="report-input"
+                                        required
+                                    />
+                                    <div className="report-form-btns">
+                                        <button type="submit" className="btn btn-primary btn-small">Submit</button>
+                                        <button type="button" className="btn btn-outline btn-small" onClick={() => setReportingType(null)}>Cancel</button>
+                                    </div>
+                                </form>
+                            )}
+                        </div>
+
                         <div className="card card-video account-details">
                             <h3>Account Info</h3>
                             <div className="detail-row"><span>Email:</span> <strong>{userData.email}</strong></div>
@@ -147,56 +181,28 @@ function App() {
         );
     }
 
-    // ── VIEW: SIGNUP ───────────────────────────────────
+    // SIGNUP & LOGIN VIEWS
     if (view === 'signup') {
         const passwordsMatch = signupData.pass1 === signupData.pass2;
         const phoneIsValid = /^\d{8}$/.test(signupData.phone);
-
         return (
             <div className="app-wrapper">
                 <Header />
                 <main className="auth-container">
                     <div className="card card-dark auth-card">
                         <h2 className="auth-title">CREATE PROFILE HERE</h2>
-                        <p className="auth-subtitle">Join the community to help protect others:</p>
                         <form className="auth-form" onSubmit={handleSignupSubmit}>
                             <div className="input-group"><label>Your email:</label><input name="email" type="email" placeholder="name@example.com" onChange={handleSignupInput} required /></div>
-
                             <div className="input-group">
                                 <label>Your phone number:</label>
                                 <div className="phone-input-container">
-                                    <select
-                                        name="countryCode"
-                                        className="country-select"
-                                        value={signupData.countryCode}
-                                        onChange={handleSignupInput}
-                                    >
-                                        <option value="+45">+45 (DK)</option>
-                                        <option value="+46">+46 (SE)</option>
-                                        <option value="+47">+47 (NO)</option>
-                                        <option value="+358">+358 (FI)</option>
-                                        <option value="+49">+49 (DE)</option>
-                                        <option value="+44">+44 (UK)</option>
-                                        <option value="+33">+33 (FR)</option>
-                                        <option value="+43">+43 (AT)</option>
-                                        <option value="+31">+31 (NL)</option>
-                                        <option value="+1">+1 (US/CA)</option>
-                                        <option value="+61">+61 (AU)</option>
+                                    <select name="countryCode" className="country-select" value={signupData.countryCode} onChange={handleSignupInput}>
+                                        <option value="+45">+45 (DK)</option><option value="+46">+46 (SE)</option><option value="+1">+1 (US)</option>
                                     </select>
-                                    <input
-                                        name="phone"
-                                        type="tel"
-                                        className="phone-digits"
-                                        placeholder="00000000"
-                                        onChange={handleSignupInput}
-                                        required
-                                    />
+                                    <input name="phone" type="tel" className="phone-digits" placeholder="00000000" onChange={handleSignupInput} required />
                                 </div>
-                                {!phoneIsValid && signupData.phone.length > 0 && (
-                                    <span className="validation-error">Must be exactly 8 digits</span>
-                                )}
+                                {!phoneIsValid && signupData.phone.length > 0 && <span className="validation-error">Must be 8 digits</span>}
                             </div>
-
                             <div className="input-group"><label>New password:</label><input name="pass1" type="password" placeholder="••••••••" onChange={handleSignupInput} required /></div>
                             <div className="input-group">
                                 <label>Repeat password:</label><input name="pass2" type="password" placeholder="••••••••" onChange={handleSignupInput} required />
@@ -212,7 +218,6 @@ function App() {
         );
     }
 
-    // ── VIEW: LOGIN ────────────────────────────────────
     if (view === 'login') {
         return (
             <div className="app-wrapper">
@@ -220,7 +225,6 @@ function App() {
                 <main className="auth-container">
                     <div className="card card-dark auth-card">
                         <h2 className="auth-title">LOG IN HERE</h2>
-                        <p className="auth-subtitle">Enter your details to help protect others:</p>
                         <form className="auth-form" onSubmit={handleLogin}>
                             <div className="input-group"><label>Your email:</label><input type="email" placeholder="name@example.com" required /></div>
                             <div className="input-group"><label>Password:</label><input type="password" placeholder="••••••••" required /></div>
@@ -234,7 +238,7 @@ function App() {
         );
     }
 
-    // ── VIEW: HOME ─────────────────────────────────────
+    // HOME VIEW
     return (
         <div className="app-wrapper">
             <Header />
@@ -243,7 +247,10 @@ function App() {
                     <img src={logoIcon} width="128" height="128" alt="Block OFF Icon" className="hero-img" />
                     <h1>Your shield against <span className="orange-text">Phishing</span></h1>
                     <p className="tagline">Block OFF identifies scammers and warns you about sketchy links, emails, and messages — before it's too late.</p>
-                    <div className="cta-row"><a href="#" className="btn btn-primary">Web Extension</a><a href="#" className="btn btn-outline">Download App (Soon)</a></div>
+                    <div className="cta-row">
+                        <a href="#" className="btn btn-primary">Web Extension</a>
+                        <a href="#" className="btn btn-outline">Download App (Soon)</a>
+                    </div>
                 </section>
                 <section className="cards-section">
                     <div className="card card-dark">
@@ -252,7 +259,6 @@ function App() {
                         <p className="card-highlight">Block OFF detects these threats in real time.</p>
                     </div>
                     <div className="card card-video">
-                        <h2>See it in action</h2>
                         <div className="video-container"><video src={phishingVid} autoPlay loop muted playsInline className="phishing-video" /></div>
                     </div>
                 </section>
