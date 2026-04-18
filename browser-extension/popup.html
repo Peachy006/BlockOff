@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<!-- Header -->
+
 <div class="header">
-    <img src="icons/icon48.png" alt="Block Off Logo" class="logo" />
-    <div class="title">
+    <img src="icons/icon48.png" class="logo" />
+    <div>
         <h1>Block Off</h1>
-        <p>Protect your browsing</p>
+        <p class="subtitle">Site safety overview</p>
     </div>
 </div>
 
@@ -22,9 +22,14 @@
     <button id="disable">Disable warnings</button>
 </div>
 
-<!-- Report -->
+<!-- Report Site -->
 <div class="section">
     <button id="report" class="danger">🚩 Report this site</button>
+
+    <div class="info">
+        <div>Domain age: <span id="domain-age">Loading...</span></div>
+        <div>Reports: <span id="report-count">Loading...</span></div>
+    </div>
 </div>
 
 <script src="popup.js"></script>
