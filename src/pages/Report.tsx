@@ -68,7 +68,7 @@ const Report = () => {
           >
             See my reports
           </Button>
-          <Button variant="ghost" onClick={() => navigate("/")} className="h-11 rounded-2xl">
+          <Button variant="ghost" onClick={() => navigate("/home")} className="h-11 rounded-2xl">
             Back to home
           </Button>
         </div>

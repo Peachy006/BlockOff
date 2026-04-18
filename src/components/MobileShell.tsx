@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { BlockOffLogo } from "./BlockOffLogo";
 
 const TABS = [
-  { to: "/", icon: Home, label: "Home", end: true },
+  { to: "/home", icon: Home, label: "Home", end: true },
   { to: "/scan", icon: Search, label: "Scan" },
   { to: "/reports", icon: FileText, label: "Reports" },
   { to: "/settings", icon: Settings, label: "Settings" },

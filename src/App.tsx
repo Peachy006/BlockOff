@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,12 +17,13 @@ const queryClient = new QueryClient();
 
 const ShellRoutes = () => {
   const { pathname } = useLocation();
-  const bare = pathname === "/onboarding" || pathname === "/auth";
+  const bare = pathname === "/onboarding" || pathname === "/auth" || pathname === "/";
   const routes = (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/" element={<Navigate to="/auth" replace />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/home" element={<Index />} />
       <Route path="/scan" element={<Scan />} />
       <Route path="/report" element={<Report />} />
       <Route path="/reports" element={<Reports />} />

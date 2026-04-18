@@ -34,7 +34,7 @@ const Onboarding = () => {
   const allow = () => {
     getDeviceId();
     setOnboarded();
-    navigate("/auth", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   if (step === STEPS.length) {
