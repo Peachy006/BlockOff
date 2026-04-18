@@ -1,0 +1,8 @@
+Styling pallet: Rustic Charm
+
+CSS color codes:
+--floral-white: #fffcf2ff;
+--dust-grey: #ccc5b9ff;
+--charcoal-brown: #403d39ff;
+--carbon-black: #252422ff;
+--spicy-paprika: #eb5e28ff;
