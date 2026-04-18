@@ -1,111 +1,118 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    --floral-white: #fffcf2;
+    --dust-grey: #ccc5b9;
+    --charcoal-brown: #403d39;
+    --carbon-black: #252422;
+    --spicy-paprika: #eb5e28;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+    --bg-main: var(--floral-white);
+    --bg-footer: var(--dust-grey);
+    --text: var(--carbon-black);
+    --accent: var(--spicy-paprika);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono: ui-monospace, monospace;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+    font: 18px/1.4 var(--sans);
+    color: var(--text);
+    background: var(--bg-main);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
-  margin: 0;
-}
+body { margin: 0; }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    border-inline: 1px solid var(--dust-grey);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+#center { padding: 30px 20px; flex-grow: 1; }
+
+.layout-grid {
+    display: grid;
+    /* Reduced left column (180px) and wider middle/right pulls the center left */
+    grid-template-columns: 180px 1fr 340px;
+    gap: 30px;
+    align-items: start;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+.side-column-left {
+    display: flex;
+    justify-content: flex-start;
+    /* This moves the button DOWN from the top */
+    padding-top: 60px;
 }
 
-code,
+.middle-box {
+    text-align: center;
+    padding-top: 20px;
+}
+
+/* THE BUTTON (Moved down via padding-top above) */
 .counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+    font-family: var(--mono);
+    background: var(--carbon-black);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    white-space: nowrap;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* ORANGE INFO BOX - Dimmed Color */
+.side-box.orange-bg {
+    background-color: color-mix(in srgb, var(--spicy-paprika), black 15%);
+    color: white;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: left;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
+
+.orange-bg h3 { color: var(--carbon-black); margin-top: 0; text-transform: uppercase; }
+.orange-bg hr { border: 0; border-top: 1px solid rgba(255,252,242,0.3); margin: 15px 0; }
+
+.video-container {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.phishing-video { width: 100%; display: block; }
+
+/* UI ELEMENTS */
+h1 { font-size: 48px; letter-spacing: -2px; margin: 20px 0 10px; }
+.orange-text { color: var(--accent); }
+.tagline { color: var(--charcoal-brown); font-size: 1.3rem; }
+
+.banner { background: white; border: 2px solid var(--accent); border-radius: 12px; padding: 24px; margin-top: 20px;}
+.download-links { display: flex; gap: 15px; justify-content: center; margin-top: 10px; }
+.download-btn {
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* FOOTER */
+#next-steps {
+    display: flex;
+    background: var(--bg-footer);
+    border-top: 1px solid var(--dust-grey);
+    text-align: left;
+}
+#next-steps > div { flex: 1; padding: 30px 40px; }
+#docs { border-right: 1px solid var(--charcoal-brown); }
+.contact-area { margin-top: 15px; padding: 10px; background: rgba(255, 252, 242, 0.4); border-radius: 6px; border-left: 3px solid var(--accent); }
+.email-display { color: var(--accent) !important; font-weight: 700; text-decoration: none; }
