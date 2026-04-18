@@ -12,12 +12,9 @@ public class Unit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String number;
+    @Column(nullable = false, unique = true)
+    private String value;
 
     @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String link;
+    private int reportCount = 0;
 }
