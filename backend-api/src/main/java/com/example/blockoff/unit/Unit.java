@@ -1,5 +1,6 @@
 package com.example.blockoff.unit;
 
+import com.example.blockoff.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,4 +18,8 @@ public class Unit {
 
     @Column(nullable = false)
     private int reportCount = 0;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

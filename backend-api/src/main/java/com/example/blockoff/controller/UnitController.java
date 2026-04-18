@@ -18,7 +18,7 @@ public class UnitController {
     }
 
     @PostMapping("/{value}")
-    public Unit addReport(@PathVariable String value) {
-        return unitService.addReport(value);
+    public Unit addReport(@PathVariable String value, @RequestParam Long userId) {
+        return unitService.addReport(value, userId);
     }
 }
