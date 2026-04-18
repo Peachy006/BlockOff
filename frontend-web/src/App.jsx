@@ -106,7 +106,7 @@ function App() {
         </footer>
     );
 
-    // ── VIEW: PROFILE ──────────────────────────────────
+// ── VIEW: PROFILE ──────────────────────────────────
     if (view === 'profile') {
         return (
             <div className="app-wrapper">
@@ -119,12 +119,14 @@ function App() {
                     </section>
 
                     <div className="profile-grid">
+                        {/* Box 1: Total Score */}
                         <div className="card card-dark stat-card highlight-card">
                             <h3>Total Score</h3>
                             <div className="stat-number">{userData.points.toLocaleString()}</div>
                             <p className="stat-label">Your points</p>
                         </div>
 
+                        {/* Box 2: Reports & Warned */}
                         <div className="card card-dark stat-card">
                             <div className="mini-stats">
                                 <div className="mini-stat-item">
@@ -137,37 +139,28 @@ function App() {
                                     <span className="mini-stat-desc">Warned</span>
                                 </div>
                             </div>
-                            <p className="impact-text">Your reports keep the community safe.</p>
+                            <p className="impact-text" style={{color: 'var(--dust-grey)', fontStyle: 'italic'}}>Your reports keep the community safe.</p>
                         </div>
 
+                        {/* Box 3: SIMPLIFIED REPORTING TOOL (Stretches full width) */}
                         <div className="card card-dark stat-card report-action-card">
-                            {!reportingType ? (
-                                <>
-                                    <h3 className="report-title">Found a threat?</h3>
-                                    <p className="report-desc">Choose an option to report a scammer.</p>
-                                    <div className="report-options">
-                                        <button className="btn btn-outline btn-small" onClick={() => setReportingType('website')}>Website</button>
-                                        <button className="btn btn-outline btn-small" onClick={() => setReportingType('phone')}>Phone</button>
-                                        <button className="btn btn-outline btn-small" onClick={() => setReportingType('email')}>Email</button>
-                                    </div>
-                                </>
-                            ) : (
-                                <form onSubmit={submitReport} className="mini-report-form">
-                                    <h3 className="form-heading">Report {reportingType}</h3>
-                                    <input
-                                        type="text"
-                                        placeholder={`Enter scam ${reportingType} here...`}
-                                        className="report-input"
-                                        required
-                                    />
-                                    <div className="report-form-btns">
-                                        <button type="submit" className="btn btn-primary btn-small">Submit</button>
-                                        <button type="button" className="btn btn-outline btn-small" onClick={() => setReportingType(null)}>Cancel</button>
-                                    </div>
-                                </form>
-                            )}
+                            <h3 className="report-title">Report Threat</h3>
+                            <p className="report-desc">Enter a suspicious URL, email, or phone number below.</p>
+
+                            <form onSubmit={submitReport} className="mini-report-form">
+                                <input
+                                    type="text"
+                                    placeholder="Type the threat here..."
+                                    className="report-input"
+                                    required
+                                />
+                                <button type="submit" className="btn btn-primary btn-full">
+                                    Submit Report
+                                </button>
+                            </form>
                         </div>
 
+                        {/* Box 4: Account Details */}
                         <div className="card card-video account-details">
                             <h3>Account Info</h3>
                             <div className="detail-row"><span>Email:</span> <strong>{userData.email}</strong></div>
