@@ -18,7 +18,11 @@
     "default_popup": "popup.html"
   },
 
-  "permissions": ["storage", "tabs", "scripting"],
+  "permissions": ["storage", "tabs"],
+
+  "host_permissions": [
+    "http://localhost:8080/*"
+  ],
 
   "content_scripts": [
     {
