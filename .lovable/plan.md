@@ -1,52 +1,59 @@
 
 
-## Plan B — Paste-ready code for every missing file
+You want to run BlockOff on your phone as a real native app. Based on the prior conversation, **Capacitor** is the right choice — it wraps your existing web code into a native shell, so we don't rewrite anything.
 
-I'll switch to default mode and print the full contents of each file you need, in copy-paste blocks. You'll create each file at the exact path shown and paste the code in.
+## What Capacitor does
+Takes your built web app (`dist/` folder), bundles it inside a native Android/iOS project, and runs it in a full-screen webview on your phone. You keep all current code (React, Tailwind, shadcn). The `document` error disappears because Capacitor's webview *is* a browser — unlike Expo.
 
-### Files I'll provide
+## Plan
 
-**1. Path alias sanity check** (so `@/...` imports resolve)
-- `tsconfig.json` — confirm `paths: { "@/*": ["./src/*"] }`
-- `vite.config.ts` — confirm `resolve.alias` for `@`
+### Step 1 — I add Capacitor to this Lovable project
+- Install `@capacitor/core`, `@capacitor/cli`, `@capacitor/ios`, `@capacitor/android`
+- Create `capacitor.config.ts` with:
+  - `appId: app.lovable.f4f82542-6503-4a9e-a02d-979df1839605`
+  - `appName: BlockOff`
+  - `server.url` pointing to your Lovable preview (enables hot-reload on phone)
 
-**2. Core helper** (required by every UI component)
-- `src/lib/utils.ts` — the `cn` function
+### Step 2 — You pull the project to your PC
+1. Click **GitHub → Export to GitHub** in Lovable (top right), or pull the latest commit from your existing `Peachy006/BlockOff` repo on the `App` branch.
+2. In VS Code terminal:
+   ```
+   git pull
+   npm install
+   ```
 
-**3. Shadcn UI components** (`src/components/ui/`)
-- `button.tsx`
-- `card.tsx`
-- `switch.tsx`
-- `label.tsx`
-- `sonner.tsx`
-- `dialog.tsx`
-- `input.tsx`
-- `textarea.tsx`
-- `tooltip.tsx`
-
-**4. BlockOff logic** (`src/lib/`)
-- `types.ts`
-- `device.ts`
-- `storage.ts`
-- `detect.ts`
-
-**5. BlockOff components** (`src/components/`)
-- `BlockOffLogo.tsx`
-- `BlockOffAlert.tsx`
-- `MobileShell.tsx`
-
-**6. One extra npm install** (for the dialog + tooltip components)
+### Step 3 — You add the Android platform (you're on Windows, so Android only — iOS needs a Mac)
 ```
-npm install @radix-ui/react-dialog @radix-ui/react-tooltip next-themes
+npx cap add android
+npx cap update android
+npm run build
+npx cap sync
 ```
 
-### Order to follow on your side
-1. Run the extra `npm install` above.
-2. Paste `src/lib/utils.ts` first (everything else imports it).
-3. Paste each `src/components/ui/*.tsx` file.
-4. Paste the `src/lib/*.ts` files.
-5. Paste the `src/components/*.tsx` files.
-6. Reload VS Code's TypeScript server (Ctrl+Shift+P → "TypeScript: Restart TS Server") to clear any stale errors.
+### Step 4 — You install Android Studio (one-time, ~30 min)
+- Download: https://developer.android.com/studio
+- During setup, let it install the Android SDK and an emulator (pick "Pixel 7" with the latest system image).
 
-After this, every import in `SettingsPage.tsx` (and the other pages) will resolve.
+### Step 5 — Run on your phone or emulator
+```
+npx cap run android
+```
+- **Emulator:** picks the Pixel 7 you installed automatically.
+- **Physical phone:** enable Developer Options → USB Debugging on your Android, plug it in via USB, then run the same command and pick your device.
+
+### Step 6 — Whenever you change code in Lovable
+```
+git pull
+npm run build
+npx cap sync
+npx cap run android
+```
+
+## Important notes
+- **iPhone:** Not possible from a Windows PC. iOS builds require macOS + Xcode. Android works fine from Windows.
+- **Hot-reload:** Because we set `server.url` to your Lovable preview, edits in Lovable appear on your phone instantly without rebuilding — as long as the phone has internet.
+- **For app store release later:** You'll remove the `server.url` line so the app runs the bundled offline code instead of the live preview.
+
+## After approval
+I'll set up Capacitor in this project (Step 1 only). Steps 2–6 happen on your machine. I'll point you to the official Lovable mobile blog post for the full walkthrough once it's installed.
 
