@@ -102,24 +102,50 @@ document.addEventListener("DOMContentLoaded", async () => {
         reportCountEl.textContent = "0";
       });
 
-  // ───────── REPORT SITE ─────────
-  reportBtn.onclick = () => {
-    chrome.storage.local.get("userId", ({ userId }) => {
-      fetch(
-        "http://localhost:8080/units/" + domain + "?userId=" + userId,
-        { method: "POST" }
-      )
-        .then(res => {
-          if (!res.ok) throw new Error("Already reported");
+    // ───────── REPORT SITE ─────────
+    reportBtn.onclick = () => {
+      chrome.storage.local.get("userId", async ({ userId }) => {
+
+        const reportUrl =
+          "http://localhost:8080/units/" + encodeURIComponent(domain) +
+          "?userId=" + userId;
+
+        // Helper: attempt reporting once
+        async function tryReport() {
+          const res = await fetch(reportUrl, { method: "POST" });
+          if (!res.ok) throw res;
           return res.json();
-        })
-        .then(unit => {
+        }
+
+        try {
+          // 1️⃣ First attempt
+          const unit = await tryReport();
           reportCountEl.textContent = unit.reportCount;
-          alert("Thank you. Site reported.");
-        })
-        .catch(() => {
-          alert("You have already reported this site.");
-        });
-    });
-  };
+          reportBtn.disabled = true;
+          reportBtn.textContent = "Reported";
+          return;
+        } catch (firstError) {
+          // 2️⃣ Force lazy unit creation
+          try {
+            await fetch("http://localhost:8080/units/" + encodeURIComponent(domain));
+          } catch {
+            // ignore – this call exists only to trigger backend creation
+          }
+
+          // 3️⃣ Retry report ONCE
+          try {
+            const unit = await tryReport();
+            reportCountEl.textContent = unit.reportCount;
+            reportBtn.disabled = true;
+            reportBtn.textContent = "Reported";
+            return;
+          } catch (secondError) {
+            // 4️⃣ Only now is it genuinely "already reported"
+            alert("You have already reported this site.");
+            reportBtn.disabled = true;
+            reportBtn.textContent = "Already reported";
+          }
+        }
+      });
+    };
 });
