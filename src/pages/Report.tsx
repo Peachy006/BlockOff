@@ -1,33 +1,56 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Phone, AtSign, Link2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { ReportType } from "@/lib/types";
 import { saveReport } from "@/lib/storage";
 import { getDeviceId } from "@/lib/device";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const TYPES: { value: ReportType; label: string; icon: React.ElementType }[] = [
-  { value: "sms", label: "SMS / Phone", icon: Phone },
-  { value: "handle", label: "Social handle", icon: AtSign },
-  { value: "url", label: "URL / Link", icon: Link2 },
-];
+// --- Type detection (same logic as Scan) ---
+function detectType(input: string): ReportType {
+  const trimmed = input.trim();
+
+  if (/^https?:\/\//i.test(trimmed) || trimmed.includes("www.")) {
+    return "url";
+  }
+
+  if (trimmed.startsWith("@")) {
+    return "handle";
+  }
+
+  if (/^\+?\d{6,}$/.test(trimmed.replace(/\s/g, ""))) {
+    return "sms";
+  }
+
+  return "sms";
+}
 
 const Report = () => {
-  const location = useLocation() as { state?: { type?: ReportType; identifier?: string } };
+  const location = useLocation() as {
+    state?: { identifier?: string };
+  };
+
   const navigate = useNavigate();
-  const [type, setType] = useState<ReportType>(location.state?.type ?? "sms");
-  const [identifier, setIdentifier] = useState(location.state?.identifier ?? "");
+
+  const [identifier, setIdentifier] = useState(
+    location.state?.identifier ?? ""
+  );
   const [excerpt, setExcerpt] = useState("");
   const [done, setDone] = useState(false);
 
+  const detectedType = identifier.trim()
+    ? detectType(identifier)
+    : null;
+
   useEffect(() => {
-    if (location.state?.identifier && location.state.identifier.length > 80) {
+    if (
+      location.state?.identifier &&
+      location.state.identifier.length > 80
+    ) {
       setExcerpt(location.state.identifier);
       setIdentifier("");
     }
@@ -35,9 +58,12 @@ const Report = () => {
 
   const submit = () => {
     if (!identifier.trim()) {
-      toast.error("Please enter the number, handle or link.");
+      toast.error("Please enter a number, handle or link.");
       return;
     }
+
+    const type = detectType(identifier);
+
     saveReport({
       id: crypto.randomUUID(),
       deviceId: getDeviceId(),
@@ -46,6 +72,7 @@ const Report = () => {
       excerpt: excerpt.trim() || undefined,
       createdAt: Date.now(),
     });
+
     setDone(true);
   };
 
@@ -68,7 +95,11 @@ const Report = () => {
           >
             See my reports
           </Button>
-          <Button variant="ghost" onClick={() => navigate("/home")} className="h-11 rounded-2xl">
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/home")}
+            className="h-11 rounded-2xl"
+          >
             Back to home
           </Button>
         </div>
@@ -80,50 +111,51 @@ const Report = () => {
     <div className="space-y-5 pt-2">
       <div>
         <h1 className="text-2xl font-bold">Report a scam</h1>
-        <p className="text-sm text-muted-foreground">Help others avoid this one.</p>
+        <p className="text-sm text-muted-foreground">
+          Help others avoid this one.
+        </p>
       </div>
 
-      <div className="space-y-2">
-        <Label className="text-xs uppercase tracking-wider text-muted-foreground">Type</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {TYPES.map((t) => {
-            const Icon = t.icon;
-            const isActive = type === t.value;
-            return (
-              <button
-                key={t.value}
-                onClick={() => setType(t.value)}
-                className={cn(
-                  "rounded-2xl py-3 text-xs font-medium border flex flex-col items-center gap-1 transition-all",
-                  isActive
-                    ? "bg-foreground text-background border-foreground shadow-card"
-                    : "bg-card text-muted-foreground border-border",
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {t.label.split(" ")[0]}
-              </button>
-            );
-          })}
+      {/* Helper text */}
+      <div className="text-xs text-muted-foreground">
+        Enter a phone number, @handle, or link
+      </div>
+
+      {/* Detected type */}
+      {detectedType && (
+        <div className="text-xs text-muted-foreground">
+          Detected:{" "}
+          <span className="font-medium">
+            {detectedType.toUpperCase()}
+          </span>
         </div>
-      </div>
+      )}
 
       <div className="space-y-2">
-        <Label htmlFor="ident" className="text-xs uppercase tracking-wider text-muted-foreground">
-          {type === "sms" ? "Phone number" : type === "handle" ? "Handle" : "URL"}
+        <Label
+          htmlFor="ident"
+          className="text-xs uppercase tracking-wider text-muted-foreground"
+        >
+          Identifier
         </Label>
         <Input
           id="ident"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          placeholder={type === "sms" ? "+47 900 12 345" : type === "handle" ? "@suspicious_user" : "https://..."}
+          placeholder="Phone number, @handle or link..."
           className="h-12 rounded-2xl bg-card"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="excerpt" className="text-xs uppercase tracking-wider text-muted-foreground">
-          Message excerpt <span className="normal-case text-muted-foreground/60">(optional)</span>
+        <Label
+          htmlFor="excerpt"
+          className="text-xs uppercase tracking-wider text-muted-foreground"
+        >
+          Message excerpt{" "}
+          <span className="normal-case text-muted-foreground/60">
+            (optional)
+          </span>
         </Label>
         <Textarea
           id="excerpt"
