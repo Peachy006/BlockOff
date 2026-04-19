@@ -8,6 +8,8 @@ import { classify } from "@/lib/detect";
 import { BlockOffAlert } from "@/components/BlockOffAlert";
 import { cn } from "@/lib/utils";
 import { ReportType } from "@/lib/types";
+import { analyzeWithAI } from "@/lib/aiDetect";
+import { toast } from "sonner";
 
 // --- Type detection ---
 function detectType(input: string): ReportType {
@@ -50,14 +52,29 @@ const Scan = () => {
     );
   };
 
-  const onCheck = () => {
-    if (!text.trim()) return;
+  const [finalResult, setFinalResult] = useState<any>(null);
+
+  const onCheck = async () => {
+    if (!text.trim() || !detectedType) return;
+    try {
+      const aiResult = await analyzeWithAI(text, detectedType);
+      setFinalResult(aiResult);
+      setOpen(true);
+    } catch (err: any){
+      if (err.message.includes("429")) {
+    toast.error("Too many requests — wait a minute");
+  } else {
+    setFinalResult(classify(text, detectedType));
     setOpen(true);
+  }
+  }
   };
 
   const onReport = () => {
     navigate("/report", { state: { identifier: text } });
   };
+
+  
 
   return (
     <div className="space-y-5 pt-2">
@@ -145,12 +162,12 @@ const Scan = () => {
         </Card>
       )}
 
-      {result && (
+      {finalResult && (
         <BlockOffAlert
           open={open}
           onOpenChange={setOpen}
           excerpt={text}
-          result={result}
+          result={finalResult}
           onReport={onReport}
         />
       )}
