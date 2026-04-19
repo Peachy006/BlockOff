@@ -6,9 +6,10 @@ import './index.css'
 function App() {
     const [view, setView] = useState('home')
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    // eslint-disable-next-line no-unused-vars
     const [reportingType, setReportingType] = useState(null)
 
-    // filler data
+    // Central user state
     const [userData, setUserData] = useState({
         id: null,
         email: 'Guest',
@@ -24,7 +25,7 @@ function App() {
         email: '', countryCode: '+45', phone: '', pass1: '', pass2: ''
     });
 
-    // API calls
+    // ── API CALLS
     const createUser = async (email, phoneNumber) => {
         const response = await fetch(
             `http://localhost:8080/users?email=${email}&phoneNumber=${phoneNumber}`,
@@ -44,7 +45,7 @@ function App() {
         return await response.json();
     };
 
-    // Handlers
+    // ── HANDLERS
     const handleSignupInput = (e) => {
         setSignupData({ ...signupData, [e.target.name]: e.target.value });
     };
@@ -55,13 +56,12 @@ function App() {
             const user = await createUser(signupData.email, signupData.phone);
             setUserData(prev => ({
                 ...prev,
-                id: user.id, // Store the ID from the database
+                id: user.id, // ID from backend
                 email: user.email,
                 phone: user.phoneNumber,
             }));
             setIsLoggedIn(true);
             setView('profile');
-            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             alert("Error connecting to server. Is the backend running?");
         }
@@ -70,7 +70,8 @@ function App() {
     const handleLogin = (e) => {
         e.preventDefault();
         const emailInput = e.target.elements[0].value;
-        setUserData(prev => ({ ...prev, email: emailInput }));
+        // Mocking a login ID since the login API isn't in your snippet yet
+        setUserData(prev => ({ ...prev, email: emailInput, id: prev.id || 123 }));
         setIsLoggedIn(true);
         setView('profile');
     };
@@ -85,16 +86,15 @@ function App() {
         const reportValue = e.target.elements[0].value;
 
         try {
-            // Using the user ID stored in state
-            const report = await addReport(reportValue, userData.id);
+            await addReport(reportValue, userData.id);
             e.target.reset();
             alert("Report Submitted!");
-
         } catch (error) {
             alert(error.message);
         }
     };
 
+    // ── COMPONENTS ─────────────────────────────────────
     const Header = () => (
         <header className="site-header">
             <div className="header-left">
@@ -137,6 +137,7 @@ function App() {
         </footer>
     );
 
+    // ── VIEWS ──────────────────────────────────────────
     if (view === 'profile') {
         return (
             <div className="app-wrapper">
@@ -248,6 +249,7 @@ function App() {
         );
     }
 
+    // HOME VIEW
     return (
         <div className="app-wrapper">
             <Header />
@@ -258,17 +260,20 @@ function App() {
                     <p className="tagline">Block OFF identifies scammers and warns you before it's too late.</p>
                     <div className="cta-row">
                         <a href="#" className="btn btn-primary">Web Extension</a>
-                        {/* Make sure THIS line below does NOT have an onClick={() => setView('signup')} */}
                         <a href="#" className="btn btn-outline">Download App</a>
                     </div>
                 </section>
                 <section className="cards-section">
-                    <div className="card card-dark"><h2>What is Phishing?</h2><p>Phishing is a cybercrime where scammers impersonate legitimate institutions to steal inforamtion or money.</p>
-                        <p>
-                            Join BlockOFF and help us make the internet a safer space for everyone.
-                        </p>
+                    <div className="card card-dark">
+                        <h2>What is Phishing?</h2>
+                        <p>Phishing is a cybercrime where scammers impersonate legitimate institutions to steal information or money.</p>
+                        <p>Join BlockOFF and help us make the internet a safer space for everyone.</p>
                     </div>
-                    <div className="card card-video"><div className="video-container"><video src={phishingVid} autoPlay loop muted playsInline className="phishing-video" /></div></div>
+                    <div className="card card-video">
+                        <div className="video-container">
+                            <video src={phishingVid} autoPlay loop muted playsInline className="phishing-video" />
+                        </div>
+                    </div>
                 </section>
             </main>
             <Footer />
