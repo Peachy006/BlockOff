@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/domains")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080",
+                        "chrome-extension://lkpnjncioceiadifnbmeaioognfcgboc"})
+
 public class DomainController {
 
     private final DomainService domainService;
