@@ -417,42 +417,50 @@ h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); letter-spacing: -2px; line-height: 1
     border: 1px solid rgba(255, 252, 242, 0.1);
 }
 
-/* ── REPORTING TOOL STYLES ── */
+/* ── REPORT ACTION CARD (Bottom Full Width) ── */
 .report-action-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 15px;
+    text-align: center;
+    background-color: var(--carbon-black);
+    border: 1px solid var(--charcoal-brown);
+    padding: 40px;
 }
 
-.report-options {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    width: 100%;
-    margin-top: 10px;
+@media (min-width: 900px) {
+    .report-action-card {
+        grid-column: span 2;
+    }
 }
 
-.btn-small {
-    padding: 8px 12px;
-    font-size: 0.8rem;
+.report-title {
+    color: #ffffff !important;
+    margin-bottom: 5px;
+    font-size: 1.6rem;
+}
+
+.report-desc {
+    color: var(--dust-grey) !important;
+    font-size: 1rem;
+    margin-bottom: 25px;
 }
 
 .mini-report-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
     width: 100%;
 }
 
 .report-input {
+    width: 100%;
     background: #151413;
-    border: 1px solid var(--charcoal-brown);
+    border: 2px solid var(--charcoal-brown);
     color: white;
-    padding: 10px;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 0.9rem;
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-bottom: 15px;
 }
 
 .report-input:focus {
@@ -460,9 +468,11 @@ h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); letter-spacing: -2px; line-height: 1
     border-color: var(--accent);
 }
 
-.report-form-btns {
-    display: flex;
-    gap: 10px;
+.report-action-card .btn-primary {
+    width: 100%;
+    padding: 14px;
+    font-weight: 700;
+    font-size: 1.1rem;
 }
 
 /* ── PROFILE GRID LAYOUT FIX ── */
