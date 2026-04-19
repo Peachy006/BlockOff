@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* BlockOff — Rustic Charm design system. All colors HSL. */
+
+@layer base {
+  :root {
+    /* Rustic Charm palette */
+    --background: 44 89% 97%;            /* floral-white #fffcf2 */
+    --foreground: 30 6% 14%;             /* carbon-black #252422 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 6% 14%;
+
+    --popover: 44 89% 97%;
+    --popover-foreground: 30 6% 14%;
+
+    --primary: 30 6% 14%;                /* carbon-black */
+    --primary-foreground: 44 89% 97%;
+
+    --secondary: 41 14% 77%;             /* dust-grey #ccc5b9 */
+    --secondary-foreground: 30 6% 14%;
+
+    --muted: 41 30% 92%;
+    --muted-foreground: 30 4% 24%;       /* charcoal-brown */
+
+    --accent: 17 84% 54%;                /* spicy-paprika #eb5e28 */
+    --accent-foreground: 44 89% 97%;
+
+    --destructive: 17 84% 54%;
+    --destructive-foreground: 44 89% 97%;
+
+    --border: 41 14% 82%;
+    --input: 41 14% 82%;
+    --ring: 17 84% 54%;
+
+    --radius: 1rem;
+
+    /* Brand tokens */
+    --paprika: 17 84% 54%;
+    --paprika-foreground: 44 89% 97%;
+    --charcoal: 30 4% 24%;
+    --floral: 44 89% 97%;
+
+    --shadow-soft: 0 8px 24px -12px hsl(30 6% 14% / 0.18);
+    --shadow-card: 0 2px 12px -6px hsl(30 6% 14% / 0.12);
+    --gradient-paprika: linear-gradient(135deg, hsl(17 84% 54%), hsl(17 84% 48%));
+
+    --sidebar-background: 44 89% 97%;
+    --sidebar-foreground: 30 6% 14%;
+    --sidebar-primary: 17 84% 54%;
+    --sidebar-primary-foreground: 44 89% 97%;
+    --sidebar-accent: 41 30% 92%;
+    --sidebar-accent-foreground: 30 6% 14%;
+    --sidebar-border: 41 14% 82%;
+    --sidebar-ring: 17 84% 54%;
+  }
+
+  .dark {
+    --background: 30 6% 10%;
+    --foreground: 44 89% 97%;
+    --card: 30 6% 14%;
+    --card-foreground: 44 89% 97%;
+    --popover: 30 6% 14%;
+    --popover-foreground: 44 89% 97%;
+    --primary: 44 89% 97%;
+    --primary-foreground: 30 6% 14%;
+    --secondary: 30 4% 24%;
+    --secondary-foreground: 44 89% 97%;
+    --muted: 30 4% 20%;
+    --muted-foreground: 41 14% 77%;
+    --accent: 17 84% 54%;
+    --accent-foreground: 44 89% 97%;
+    --destructive: 17 84% 54%;
+    --destructive-foreground: 44 89% 97%;
+    --border: 30 4% 24%;
+    --input: 30 4% 24%;
+    --ring: 17 84% 54%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    @apply h-full;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv01";
+  }
+}
+
+@layer utilities {
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .bg-gradient-paprika { background: var(--gradient-paprika); }
+}
