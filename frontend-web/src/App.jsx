@@ -52,17 +52,6 @@ function App() {
         setView('home');
     };
 
-    const submitReport = (e) => {
-        e.preventDefault();
-        setUserData(prev => ({
-            ...prev,
-            points: prev.points + 50,
-            reported: prev.reported + 1
-        }));
-        setReportingType(null);
-        alert("Report received! +50 Hunter Points awarded.");
-    };
-
     // ── SHARED COMPONENTS ──────────────────────────────
     const Header = () => (
         <header className="site-header">
@@ -106,7 +95,18 @@ function App() {
         </footer>
     );
 
-// ── VIEW: PROFILE ──────────────────────────────────
+    // Simplified Logic for submitting a report
+    const submitReport = (e) => {
+        e.preventDefault();
+
+        // In the future, you would put your database POST request here.
+        // For now, we just clear the form and show a simple confirmation.
+
+        e.target.reset(); // Clears the text from the input field
+        alert("Report Submitted!");
+    };
+
+    // ── VIEW: PROFILE (Updated Layout) ──────────────────────────────────
     if (view === 'profile') {
         return (
             <div className="app-wrapper">
