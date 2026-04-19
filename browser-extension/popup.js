@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-  const API_BASE = "http://localhost:8080";
+  const API_BASE = "http://localhost:8081";
 
   // ───────── HELPERS ─────────
 
@@ -30,14 +30,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     chrome.storage.local.set({ userId });
   }
 
+  function clearUserId() {
+    chrome.storage.local.remove("userId");
+  }
+
   // ───────── DOM ELEMENTS ─────────
 
   const enableBtn  = document.getElementById("enable");
   const disableBtn = document.getElementById("disable");
   const reportBtn  = document.getElementById("report");
 
-  const loginBtn = document.getElementById("login");
-  const emailInput = document.getElementById("login-email");
+  const loginBtn  = document.getElementById("login");
+  const logoutBtn = document.getElementById("logout");
+
+  const emailInput    = document.getElementById("login-email");
   const passwordInput = document.getElementById("login-password");
 
   const authSection = document.getElementById("auth-section");
@@ -45,63 +51,80 @@ document.addEventListener("DOMContentLoaded", async () => {
   const domainAgeEl   = document.getElementById("domain-age");
   const reportCountEl = document.getElementById("report-count");
 
-  // ───────── LOGIN (REAL AUTH) ─────────
+  // ───────── INITIAL REPORT BUTTON STATE ─────────
 
-  if (loginBtn) {
-    loginBtn.onclick = async () => {
-      // Defensive: re-fetch inputs to avoid null ID mismatch
-      const emailField = document.getElementById("login-email");
-      const passwordField = document.getElementById("login-password");
+  reportBtn.disabled = true;
+  reportBtn.textContent = "Log in to report";
 
-      if (!emailField || !passwordField) {
-        alert("Login inputs not found. Check popup.html IDs.");
-        console.error("Missing login-email or login-password elements");
-        return;
-      }
+  // ───────── RESTORE LOGIN STATE ─────────
 
-      const email = emailField.value.trim();
-      const password = passwordField.value;
+  const existingUserId = await getStoredUserId();
+  if (existingUserId) {
+    reportBtn.disabled = false;
+    reportBtn.textContent = "🚩 Report this site";
 
-      console.log("LOGIN ATTEMPT", { email, password });
-
-      if (!email || !password) {
-        alert("Email and password are required.");
-        return;
-      }
-
-      try {
-        const res = await fetch(API_BASE + "/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: new URLSearchParams({ email, password })
-        });
-
-        console.log("LOGIN STATUS:", res.status);
-
-        const responseText = await res.text();
-        console.log("LOGIN RESPONSE RAW:", responseText);
-
-        if (!res.ok) {
-          alert("Invalid email or password.");
-          return;
-        }
-
-        const user = JSON.parse(responseText);
-        console.log("LOGIN SUCCESS USER:", user);
-
-        storeUserId(user.id);
-
-        alert("Logged in.");
-        authSection.style.display = "none";
-
-      } catch (err) {
-        console.error("LOGIN ERROR:", err);
-        alert("Could not connect to server.");
-      }
-    };
+    loginBtn.style.display = "none";
+    emailInput.style.display = "none";
+    passwordInput.style.display = "none";
+    logoutBtn.style.display = "block";
   }
+
+  // ───────── LOGIN ─────────
+
+  loginBtn.onclick = async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      alert("Email and password are required.");
+      return;
+    }
+
+    try {
+      const res = await fetch(API_BASE + "/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ email, password })
+      });
+
+      if (!res.ok) {
+        alert("Invalid email or password.");
+        return;
+      }
+
+      const user = await res.json();
+      storeUserId(user.id);
+
+      alert("Logged in.");
+
+      reportBtn.disabled = false;
+      reportBtn.textContent = "🚩 Report this site";
+
+      loginBtn.style.display = "none";
+      emailInput.style.display = "none";
+      passwordInput.style.display = "none";
+      logoutBtn.style.display = "block";
+
+    } catch {
+      alert("Could not connect to server.");
+    }
+  };
+
+  // ───────── LOGOUT ─────────
+
+  logoutBtn.onclick = () => {
+    clearUserId();
+
+    reportBtn.disabled = true;
+    reportBtn.textContent = "Log in to report";
+
+    loginBtn.style.display = "block";
+    emailInput.style.display = "block";
+    passwordInput.style.display = "block";
+    logoutBtn.style.display = "none";
+
+    alert("Logged out.");
+  };
 
   // ───────── WARNING ENABLE / DISABLE ─────────
 
@@ -141,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (isLocalDomain(domain)) {
     domainAgeEl.textContent = "Local / Development";
   } else {
-    fetch(API_BASE+"/api/domains/age?domain="+domain)
+    fetch(API_BASE + "/api/domains/age?domain=" + domain)
       .then(res => res.text())
       .then(age => domainAgeEl.textContent = age)
       .catch(() => domainAgeEl.textContent = "Unknown");
@@ -149,7 +172,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ───────── REPORT COUNT ─────────
 
-  fetch(API_BASE+"/units/"+encodeURIComponent(domain))
+  fetch(API_BASE + "/units/" + encodeURIComponent(domain))
     .then(res => res.ok ? res.json() : { reportCount: 0 })
     .then(unit => {
       reportCountEl.textContent =
@@ -168,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const res = await fetch(
-      API_BASE+"/units/"+encodeURIComponent(domain)+"?userId="+userId,
+      API_BASE + "/units/" + encodeURIComponent(domain) + "?userId=" + userId,
       { method: "POST" }
     );
 
