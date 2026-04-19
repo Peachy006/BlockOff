@@ -1,78 +1,74 @@
-import { ClassifyResult, ReportType, Verdict } from "./types";
-import { findCommunity } from "./storage";
+import { ReportType, ClassifyResult } from "./types";
 
-// Heuristic local detector — placeholder for the AI edge function.
-// Returns the same shape the future Lovable AI call will return.
-export function classify(input: string, type: ReportType): ClassifyResult {
-  const text = input.trim();
-  const lower = text.toLowerCase();
+export function classify(text: string, type: ReportType): ClassifyResult {
+  const input = text.toLowerCase();
+
   let score = 0;
   const reasons: string[] = [];
   const indicators: string[] = [];
 
-  const SCAM_WORDS = [
-    "verify", "urgent", "suspend", "suspended", "click here", "won", "winner",
-    "prize", "bitcoin", "crypto", "wallet", "bank", "password", "otp", "code",
-    "delivery", "redeliver", "customs", "fee", "tax owed", "tax", "irs", "skatt",
-    "pakke", "toll", "konto", "verifiser",
-  ];
-  const URL_RE = /(https?:\/\/|www\.|bit\.ly|tinyurl|t\.co|goo\.gl)\S+/i;
-  const SUSPICIOUS_TLD = /\.(zip|xyz|top|click|country|gq|tk|ml|cf)\b/i;
-  const LOOKALIKE = /(payp[a4]l|amaz[o0]n|app[l1]e|micr[o0]soft|netfl[i1]x|dhl|posten|fedex)/i;
-
-  for (const w of SCAM_WORDS) {
-    if (lower.includes(w)) {
-      score += 12;
-      indicators.push(`Keyword: "${w}"`);
-    }
-  }
-
-  if (URL_RE.test(text)) {
-    score += 18;
-    reasons.push("Contains a link, often used to harvest credentials.");
-    indicators.push("Embedded link");
-  }
-  if (SUSPICIOUS_TLD.test(text)) {
-    score += 25;
-    reasons.push("Uses a domain extension commonly abused by scammers.");
-  }
-  if (LOOKALIKE.test(text)) {
+  //  URGENCY
+  if (/urgent|immediately|now|hurry|limited|final notice/.test(input)) {
     score += 20;
-    reasons.push("Impersonates a well-known brand.");
+    reasons.push("Urgency language");
+    indicators.push("Urgency");
   }
-  if (/[A-Z]{4,}/.test(text) && type !== "url") {
-    score += 6;
-    indicators.push("Heavy use of CAPS");
+
+  //  MONEY / PAYMENT
+  if (/pay|fee|payment|invoice|crypto|bitcoin/.test(input)) {
+    score += 20;
+    reasons.push("Requests payment");
+    indicators.push("Payment request");
   }
-  if (/\d{4,}/.test(text) && /(code|otp|verify)/i.test(lower)) {
+  //  SUSPICIOUS LINKS
+  if (/bit\.ly|tinyurl|\.xyz|\.top|\.click|\.ru/.test(input)) {
+    score += 25;
+    reasons.push("Suspicious link");
+    indicators.push("Shortened URL");
+  }
+
+  // 🏦 IMPERSONATION
+  if (/dhl|posten|fedex|dnb|bank|skatt|irs/.test(input)) {
     score += 15;
-    reasons.push("Asks for a verification code.");
-  }
-  if (type === "url" && /[0-9]{3,}\./.test(text)) {
-    score += 10;
-    indicators.push("Numeric host or IP-like URL");
-  }
-  if (type === "handle" && /[il1|0o]{2,}/.test(text)) {
-    score += 8;
-    indicators.push("Look-alike characters in handle");
+    reasons.push("Impersonates trusted service");
+    indicators.push("Impersonation");
   }
 
-  // Community boost
-  const match = findCommunity(text, type);
-  const communityMatches = match?.count ?? 0;
-  if (communityMatches > 0) {
-    score += Math.min(40, 15 + communityMatches);
-    reasons.unshift(`Reported by ${communityMatches} other BlockOff user${communityMatches === 1 ? "" : "s"}.`);
+  //  ACCOUNT THREATS
+  if (/account|konto|locked|suspended|verify/.test(input)) {
+    score += 15;
+    reasons.push("Account threat");
+    indicators.push("Threat");
   }
 
-  if (reasons.length === 0 && indicators.length === 0) {
-    reasons.push("No common scam patterns detected. Stay alert anyway.");
+  //  PRIZES
+  if (/won|winner|prize|gift/.test(input)) {
+    score += 20;
+    reasons.push("Too good to be true");
+    indicators.push("Prize scam");
   }
 
-  const severity = Math.max(0, Math.min(100, score));
-  let verdict: Verdict = "safe";
-  if (severity >= 55) verdict = "scam";
-  else if (severity >= 25) verdict = "suspicious";
+  //  MANIPULATION
+  if (/help me|urgent help|send money/.test(input)) {
+    score += 25;
+    reasons.push("Emotional manipulation");
+    indicators.push("Manipulation");
+  }
 
-  return { verdict, severity, reasons, indicators, communityMatches };
+  // Clamp score
+  score = Math.min(100, score);
+
+  let verdict: "safe" | "suspicious" | "scam";
+
+  if (score >= 60) verdict = "scam";
+  else if (score >= 30) verdict = "suspicious";
+  else verdict = "safe";
+
+  return {
+    verdict,
+    severity: score,
+    reasons,
+    indicators,
+    communityMatches: 0,
+  };
 }

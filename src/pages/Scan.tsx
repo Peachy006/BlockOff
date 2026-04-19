@@ -8,8 +8,8 @@ import { classify } from "@/lib/detect";
 import { BlockOffAlert } from "@/components/BlockOffAlert";
 import { cn } from "@/lib/utils";
 import { ReportType } from "@/lib/types";
-import { analyzeWithAI } from "@/lib/aiDetect";
 import { toast } from "sonner";
+import { set } from "date-fns";
 
 // --- Type detection ---
 function detectType(input: string): ReportType {
@@ -51,24 +51,12 @@ const Scan = () => {
       "URGENT: Your DHL pakke is held at customs. Pay the fee here: http://bit.ly/dhl-redeliv3ry"
     );
   };
-
-  const [finalResult, setFinalResult] = useState<any>(null);
-
-  const onCheck = async () => {
-    if (!text.trim() || !detectedType) return;
-    try {
-      const aiResult = await analyzeWithAI(text, detectedType);
-      setFinalResult(aiResult);
-      setOpen(true);
-    } catch (err: any){
-      if (err.message.includes("429")) {
-    toast.error("Too many requests — wait a minute");
-  } else {
-    setFinalResult(classify(text, detectedType));
-    setOpen(true);
+  const onCheck = () => {
+    if (!text.trim()) {
+      toast.error("Please enter a message to analyze.");
+      return;
+    }
   }
-  }
-  };
 
   const onReport = () => {
     navigate("/report", { state: { identifier: text } });
@@ -112,7 +100,7 @@ const Scan = () => {
 
       <div className="flex gap-2">
         <Button
-          onClick={onCheck}
+          onClick={() => setOpen(true)}
           disabled={!text.trim()}
           className="flex-1 h-12 rounded-2xl bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
         >
@@ -162,12 +150,12 @@ const Scan = () => {
         </Card>
       )}
 
-      {finalResult && (
+      {result && (
         <BlockOffAlert
           open={open}
           onOpenChange={setOpen}
           excerpt={text}
-          result={finalResult}
+          result={result}
           onReport={onReport}
         />
       )}
